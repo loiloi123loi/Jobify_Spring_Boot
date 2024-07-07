@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -46,11 +47,13 @@ public class User {
     @Column(name = "forgotPasswordToken")
     private String forgotPasswordToken;
 
-    @Column(name = "created_at")
-    private LocalDate createdAt;
+    @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
 
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -59,7 +62,7 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        LocalDate now = LocalDate.now();
+        Date now = new Date();
         this.createdAt = now;
         this.updatedAt = now;
         if (this.verified == null) {
@@ -69,7 +72,7 @@ public class User {
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = new Date();
     }
 
     @Override
