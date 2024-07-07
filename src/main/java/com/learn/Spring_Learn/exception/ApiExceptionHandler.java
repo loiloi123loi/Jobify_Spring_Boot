@@ -6,12 +6,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.Map;
 
+import static com.learn.Spring_Learn.utils.Template.createResponse;
+
 @ControllerAdvice
 public class ApiExceptionHandler {
     @ExceptionHandler(InputFieldException.class)
-    public ResponseEntity<Map<String, String>> handleInputFieldException(InputFieldException exception) {
-        InputFieldException inputFieldException = new InputFieldException(exception.getBindingResult());
+    public ResponseEntity<Map<String, Object>> handleInputFieldException(InputFieldException exception) {
+        InputFieldException inputFieldException = new InputFieldException(exception.getInputFieldMessage(), exception.getBindingResult());
         return ResponseEntity.badRequest()
-                             .body(inputFieldException.getErrorsMap());
+                             .body(createResponse(inputFieldException.getInputFieldMessage(), inputFieldException.getErrorsMap()));
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<Map<String, Object>> handleEmailException(EmailException emailException) {
+        return ResponseEntity.badRequest()
+                             .body(createResponse(emailException.getEmailError()));
     }
 }

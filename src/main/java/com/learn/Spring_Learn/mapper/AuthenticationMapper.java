@@ -8,17 +8,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 
+import java.util.Map;
+
+import static com.learn.Spring_Learn.constants.Messages.PROVIDE_ALL_FIELDS_PLEASE;
+
 @Component
 @RequiredArgsConstructor
 public class AuthenticationMapper {
     private final AuthenticationService authenticationService;
     private final CommonMapper commonMapper;
 
-    public String registerUser(RegisterRequest registerRequest, BindingResult bindingResult) {
-        System.out.println("==========" + registerRequest);
-        System.out.println("==========" + bindingResult.hasErrors() + "======" + bindingResult);
+    public Map<String, Object> registerUser(RegisterRequest registerRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new InputFieldException(bindingResult);
+            throw new InputFieldException(PROVIDE_ALL_FIELDS_PLEASE, bindingResult);
         }
         User user = commonMapper.convertToEntity(registerRequest, User.class);
         return authenticationService.registerUser(user, registerRequest.getRepeat_password());

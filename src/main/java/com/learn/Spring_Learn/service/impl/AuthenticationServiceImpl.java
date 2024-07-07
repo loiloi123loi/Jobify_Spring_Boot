@@ -12,10 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.learn.Spring_Learn.constants.Messages.*;
+import static com.learn.Spring_Learn.utils.RandomStringUtil.generateRandomString;
+import static com.learn.Spring_Learn.utils.Template.createResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     @Transactional
-    public String registerUser(User user, String repeat_password) {
+    public Map<String, Object> registerUser(User user, String repeat_password) {
         if (user.getPassword() != null && !user.getPassword()
                                                .equals(repeat_password)) {
             throw new PasswordException(PASSWORD_NOT_MATCH);
@@ -35,12 +38,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new EmailException(EMAIL_IN_USE);
         }
         user.setVerified(false);
-        user.setRoles(Collections.singleton(Role.USER));
+        user.setRoles(Set.of(Role.USER));
         user.setProvider(AuthProvider.LOCAL);
         user.setActivateToken(UUID.randomUUID()
                                   .toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setActivateToken(generateRandomString(50));
         userRepository.save(user);
-        return REGISTER_SUCCESSFUL;
+        return createResponse(REGISTER_SUCCESSFUL);
     }
 }

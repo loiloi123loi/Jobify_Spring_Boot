@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 import static com.learn.Spring_Learn.constants.PathConstants.API_V1_AUTH;
 import static com.learn.Spring_Learn.constants.PathConstants.REGISTER;
 
@@ -21,7 +23,7 @@ public class AuthenticationController {
     private final AuthenticationMapper authenticationMapper;
 
     @PostMapping(REGISTER)
-    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterRequest request, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, Object>> registerUser(@Valid @RequestBody RegisterRequest request, BindingResult bindingResult) {
         return ResponseEntity.ok(authenticationMapper.registerUser(request, bindingResult));
     }
 }

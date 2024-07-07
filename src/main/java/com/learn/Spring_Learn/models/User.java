@@ -2,7 +2,6 @@ package com.learn.Spring_Learn.models;
 
 import com.learn.Spring_Learn.enums.AuthProvider;
 import com.learn.Spring_Learn.enums.Role;
-import com.learn.Spring_Learn.enums.VerifyToken;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,37 +40,22 @@ public class User {
     @Column(name = "provider", nullable = false)
     private AuthProvider provider;
 
+    @Column(name = "activeToken")
+    private String activateToken;
+
+    @Column(name = "forgotPasswordToken")
+    private String forgotPasswordToken;
+
     @Column(name = "created_at")
     private LocalDate createdAt;
 
     @Column(name = "updated_at")
     private LocalDate updatedAt;
 
-    @Transient
-    private String activateToken;
-
-    @Transient
-    private String forgotPasswordToken;
-
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
-
-    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Token> tokens;
-
-    @PostLoad
-    protected void onPostLoad() {
-        for (Token token : this.tokens) {
-            VerifyToken type = token.getType();
-            if (type == VerifyToken.ACTIVATE_TOKEN) {
-                this.activateToken = token.getToken();
-            } else if (type == VerifyToken.FORGOT_PASSWORD_TOKEN) {
-                this.forgotPasswordToken = token.getToken();
-            }
-        }
-    }
 
     @PrePersist
     protected void onCreate() {
